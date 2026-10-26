@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qwen-programming-tutor"
+version = "0.1.0"
+description = "A guided project for instruction-tuning a Qwen programming tutor with LoRA"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "accelerate>=1,<2",
+    "datasets>=3,<5",
+    "peft>=0.14,<1",
+    "transformers>=4.48,<6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+    "ruff>=0.9,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
