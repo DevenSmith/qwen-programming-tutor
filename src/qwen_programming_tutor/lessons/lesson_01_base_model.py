@@ -58,3 +58,46 @@ print(input_ids.device)
 
 print("\nFirst 20 token IDs:")
 print(input_ids[0, :20])
+
+print("\nLoading model...")
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    dtype=torch.float16,
+).to(device)
+
+model.eval()
+
+number_of_parameters = sum(
+    parameter.numel()
+    for parameter in model.parameters()
+)
+
+print("\nNumber of parameters:")
+print(f"{number_of_parameters:,}")
+
+print("\nModel device:")
+print(next(model.parameters()).device)
+
+print("\nModel data type:")
+print(next(model.parameters()).dtype)
+
+with torch.no_grad():
+    generated_ids = model.generate(
+        **model_inputs,
+        max_new_tokens=150,
+        do_sample=False,
+    )
+
+response_ids = generated_ids[
+    0,
+    input_ids.shape[1] :,
+]
+
+response = tokenizer.decode(
+    response_ids,
+    skip_special_tokens=True,
+)
+
+print("\nBase model response:")
+print(response)
