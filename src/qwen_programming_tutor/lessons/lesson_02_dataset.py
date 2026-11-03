@@ -1,7 +1,7 @@
 import ast
+import json
 
 from datasets import load_dataset
-
 
 dataset_name = "nvidia/OpenCodeInstruct"
 
@@ -95,3 +95,16 @@ print(filtered_example["input"][:500])
 
 print("Output:")
 print(filtered_example["output"][:500])    
+
+judgement = json.loads(
+    filtered_example["llm_judgement"]
+)
+
+print("\nLLM judgement:")
+
+print(
+    json.dumps(
+        judgement,
+        indent=2,
+    )
+)
