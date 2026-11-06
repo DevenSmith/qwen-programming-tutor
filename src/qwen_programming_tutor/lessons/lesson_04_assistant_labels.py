@@ -84,3 +84,21 @@ print(labels.shape)
 
 print("\nInputs and labels initially identical:")
 print(torch.equal(input_ids, labels))
+
+prompt_messages = messages[:2]
+
+prompt_inputs = tokenizer.apply_chat_template(
+    prompt_messages,
+    tokenize=True,
+    add_generation_prompt=True,
+    return_tensors="pt",
+    return_dict=True,
+)
+
+prompt_length = prompt_inputs["input_ids"].shape[1]
+
+print("\nPrompt length:")
+print(prompt_length)
+
+print("\nTotal conversation length:")
+print(input_ids.shape[1])
