@@ -102,3 +102,25 @@ print(prompt_length)
 
 print("\nTotal conversation length:")
 print(input_ids.shape[1])
+
+labels[:, :prompt_length] = -100
+ignored_token_count = (labels == -100).sum().item()
+trained_token_count = (labels != -100).sum().item()
+
+print("\nIgnored tokens:")
+print(ignored_token_count)
+
+print("\nTokens used for training:")
+print(trained_token_count)
+
+print("\nFirst 10 labels:")
+print(labels[0, :10])
+
+print("\nFirst 10 trained labels:")
+print(labels[0, prompt_length : prompt_length + 10])
+
+trained_token_ids = labels[labels != -100].tolist()
+trained_text = tokenizer.decode(trained_token_ids)
+
+print("\nText used for training:")
+print(trained_text)
