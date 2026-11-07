@@ -1,7 +1,6 @@
 import torch
-from transformers import AutoModelForCausalLM
 from peft import LoraConfig, TaskType, get_peft_model
-
+from transformers import AutoModelForCausalLM
 
 model_name = "Qwen/Qwen2.5-1.5B-Instruct"
 
