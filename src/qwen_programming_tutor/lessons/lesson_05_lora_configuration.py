@@ -53,6 +53,10 @@ model = get_peft_model(
     lora_configuration,
 )
 
+model.gradient_checkpointing_enable()
+model.enable_input_require_grads()
+model.config.use_cache = False
+
 total_parameters_after_lora = sum(
     parameter.numel()
     for parameter in model.parameters()
@@ -90,3 +94,32 @@ for name, parameter in model.named_parameters():
 
         if shown_parameters == 8:
             break
+
+print("\nGradient checkpointing enabled:")
+print(model.is_gradient_checkpointing)
+
+print("\nAttention cache enabled:")
+print(model.config.use_cache)
+
+trainable_model_parameters = [
+    parameter
+    for parameter in model.parameters()
+    if parameter.requires_grad
+]
+
+optimizer = torch.optim.AdamW(
+    trainable_model_parameters,
+    lr=2e-4,
+)
+
+optimizer_parameter_count = sum(
+    parameter.numel()
+    for parameter_group in optimizer.param_groups
+    for parameter in parameter_group["params"]
+)
+
+print("\nParameters given to optimizer:")
+print(f"{optimizer_parameter_count:,}")
+
+print("\nLearning rate:")
+print(optimizer.param_groups[0]["lr"])
