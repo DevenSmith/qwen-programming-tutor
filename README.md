@@ -63,6 +63,24 @@ PyTorch's causal language-model loss ignores positions labeled `-100`. The model
 
 Main takeaway: the input and training target serve different purposes. The model reads all conversation tokens, but only the assistant portion contributes to the loss. Hugging Face performs the one-token causal prediction shift internally, so the labels should not be shifted manually.
 
+### Lesson 5: Configure LoRA and memory-efficient training
+
+Loaded the 1.54-billion-parameter Qwen model and attached Low-Rank Adaptation (LoRA) matrices to the attention `q_proj` and `v_proj` modules. The configuration used rank 8, alpha 16, and 5% adapter dropout. The original model parameters were frozen while the new adapter parameters remained trainable.
+
+The resulting model contained 1,544,803,840 total parameters but only 1,089,536 trainable parameters, or approximately 0.0705% of the model. Gradient checkpointing was enabled to reduce activation memory, the generation-oriented attention cache was disabled during training, and AdamW received only the trainable adapter parameters.
+
+Main takeaway: LoRA preserves and uses the complete pretrained model while learning a task-specific update through a comparatively small set of parameters. It makes fine-tuning practical on consumer hardware without modifying every base-model weight.
+
+### Lesson 6: Fine-tune and save the LoRA adapter
+
+Combined the earlier lessons into an end-to-end training pipeline. OpenCodeInstruct examples were streamed, filtered, shuffled, split into training and validation sets, converted to Qwen conversations, truncated to 512 tokens, and masked so only assistant tokens contributed to the loss. Examples whose prompts left no assistant training tokens were discarded.
+
+The lesson also introduced dynamic padding, attention masks, ignored label padding, validation-loss measurement, gradient accumulation, and gradient clipping. A physical batch size of one and eight accumulation steps provided an effective batch size of eight while keeping GPU-memory use manageable on an NVIDIA GeForce RTX 3060.
+
+The adapter was trained for one epoch over 197 usable examples. Validation loss decreased from 0.2427 to 0.1790, an improvement of approximately 26%. The trained LoRA adapter and tokenizer were saved to `checkpoints/qwen_programming_tutor_lora` in about 15.8 MB, without creating another multi-gigabyte copy of the base Qwen model.
+
+Main takeaway: a complete fine-tuning run includes much more than calling `backward()`. Data quality, chat formatting, label masking, batching, validation, memory management, optimization, and checkpoint saving all have to work together.
+
 ## Planned technologies
 
 - Python
@@ -86,6 +104,6 @@ qwen-programming-tutor/
 
 ## Status
 
-Lessons 1 through 4 are complete. The project can load and evaluate the base Qwen model, inspect and filter instruction data, apply Qwen's chat format, and construct assistant-only training labels.
+Lessons 1 through 6 are complete. The project can prepare instruction data, configure memory-efficient LoRA training, fine-tune Qwen on a consumer GPU, evaluate validation loss, and save a reusable adapter.
 
-The next step is Lesson 5: configure LoRA and GPU-efficient training.
+The next step is Lesson 7: compare the original and fine-tuned models on unseen programming prompts.
