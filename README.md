@@ -81,6 +81,16 @@ The adapter was trained for one epoch over 197 usable examples. Validation loss 
 
 Main takeaway: a complete fine-tuning run includes much more than calling `backward()`. Data quality, chat formatting, label masking, batching, validation, memory management, optimization, and checkpoint saving all have to work together.
 
+### Lesson 7: Compare the base and fine-tuned models
+
+Loaded the original Qwen model and the saved LoRA adapter, then generated deterministic responses from both versions using identical chat templates and generation settings. Three unseen prompts tested debugging and explanation of a mutable default argument, implementation and complexity analysis of a first-unique-character function, and explanation of shallow versus deep copying.
+
+The comparison used simple automatic checks for response length, requested code, and key concepts, followed by manual review for correctness, clarity, completeness, and instruction-following. The adapter sometimes produced more structured or complete responses, but it did not consistently improve correctness. Both models misdiagnosed the mutable-default bug, the fine-tuned model produced an incorrect example for the unique-character task, and several responses stopped before completing every requested explanation.
+
+These results provided an important counterpoint to Lesson 6: although validation loss decreased by approximately 26%, performance did not improve consistently on unrelated real-world prompts. The adapter learned to predict text resembling its training examples more effectively, but a small fine-tuning dataset did not guarantee stronger reasoning, factual accuracy, or instruction-following.
+
+Main takeaway: validation loss is only one evaluation signal. Useful LLM evaluation requires multiple unseen prompts, identical comparison conditions, task-specific checks, and human review of factual correctness and teaching quality.
+
 ## Planned technologies
 
 - Python
@@ -104,6 +114,6 @@ qwen-programming-tutor/
 
 ## Status
 
-Lessons 1 through 6 are complete. The project can prepare instruction data, configure memory-efficient LoRA training, fine-tune Qwen on a consumer GPU, evaluate validation loss, and save a reusable adapter.
+Lessons 1 through 7 are complete. The project can prepare instruction data, configure memory-efficient LoRA training, fine-tune Qwen on a consumer GPU, save a reusable adapter, and compare the base and tuned models on unseen programming tasks.
 
-The next step is Lesson 7: compare the original and fine-tuned models on unseen programming prompts.
+The next step is Lesson 8: build a local interactive chat interface for the fine-tuned programming tutor.
